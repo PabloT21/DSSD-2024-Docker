@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  db:
+    image: bonitasoft/bonita-postgres:12.6
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASS}
+    restart: always
+    command:
+      - -c
+      - max_prepared_transactions=100
+
+  bonita:
+    image: bonita:7.14.0
+    hostname: custom-hostname.example.com
+    ports:
+      - 8080:8080
+    environment:
+      - DB_VENDOR=${DB_VENDOR}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+      - BIZ_DB_NAME=${BIZ_DB_NAME}
+      - BIZ_DB_USER=${BIZ_DB_USER}
+      - BIZ_DB_PASS=${BIZ_DB_PASS}
+      - TENANT_LOGIN=${TENANT_LOGIN}
+      - TENANT_PASSWORD=${TENANT_PASSWORD}
+      - PLATFORM_LOGIN=${PLATFORM_LOGIN}
+      - PLATFORM_PASSWORD=${PLATFORM_PASSWORD}
+    restart: on-failure:2
+    depends_on:
+      - db
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        echo 'Waiting for PostgreSQL to be available'
+        maxTries=10
+        while [ "$$maxTries" -gt 0 ] && [ $$(echo 'QUIT' | nc -w 1 "$$DB_HOST" 5432; echo "$$?") -gt 0 ]; do
+            sleep 1
+            let maxTries--
+        done
+        if [ "$$maxTries" -le 0 ]; then
+            echo >&2 'error: unable to contact Postgres after 10 tries'
+            exit 1
+        fi
+        exec /opt/files/startup.sh /opt/bonita/server/bin/catalina.sh run
