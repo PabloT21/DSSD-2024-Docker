@@ -1,0 +1,59 @@
+services:
+  - type: database
+    name: bonita-database
+    databaseType: postgres
+    plan: free
+    postgresVersion: 12
+    envVars:
+      - key: POSTGRES_PASSWORD
+        value: ${DB_PASS}
+      - key: POSTGRES_USER
+        value: ${DB_USER}
+      - key: POSTGRES_DB
+        value: ${DB_NAME}
+      - key: POSTGRES_PORT
+        value: ${DB_PORT}
+      - key: max_prepared_transactions
+        value: "100"
+  
+  - type: web
+    name: bonita-web
+    env: production
+    plan: free
+    buildCommand: ''
+    startCommand: bash -c "set -e && ./opt/files/startup.sh /opt/bonita/server/bin/catalina.sh run"
+    envVars:
+      - key: DB_VENDOR
+        value: ${DB_VENDOR}
+      - key: DB_HOST
+        value: ${DB_HOST}
+      - key: DB_PORT
+        value: ${DB_PORT}
+      - key: DB_NAME
+        value: ${DB_NAME}
+      - key: DB_USER
+        value: ${DB_USER}
+      - key: DB_PASS
+        value: ${DB_PASS}
+      - key: BIZ_DB_NAME
+        value: ${BIZ_DB_NAME}
+      - key: BIZ_DB_USER
+        value: ${BIZ_DB_USER}
+      - key: BIZ_DB_PASS
+        value: ${BIZ_DB_PASS}
+      - key: TENANT_LOGIN
+        value: ${TENANT_LOGIN}
+      - key: TENANT_PASSWORD
+        value: ${TENANT_PASSWORD}
+      - key: PLATFORM_LOGIN
+        value: ${PLATFORM_LOGIN}
+      - key: PLATFORM_PASSWORD
+        value: ${PLATFORM_PASSWORD}
+    autoDeploy: true
+    healthCheckPath: "/"
+    dependencies:
+      - bonita-database
+    ports:
+      - name: http
+        port: 8080
+        protocol: tcp
