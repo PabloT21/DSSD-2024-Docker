@@ -1,2 +1,3 @@
 .env
 ./bonita
+./postgres_data
