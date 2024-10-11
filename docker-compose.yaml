@@ -11,6 +11,8 @@ services:
       - max_prepared_transactions=100
     ports:
       - 5432:5432
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d/scripts
   bonita:
     image: bonita:7.14.0
     hostname: custom-hostname.example.com
