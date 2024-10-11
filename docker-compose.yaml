@@ -18,6 +18,8 @@ services:
     hostname: custom-hostname.example.com
     ports:
       - 8080:8080
+    volumes:
+      - ./bonita:/opt/bonita
     environment:
       - DB_VENDOR=${DB_VENDOR}
       - DB_HOST=${DB_HOST}
