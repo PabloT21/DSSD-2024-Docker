@@ -17,8 +17,6 @@ services:
     hostname: custom-hostname.example.com
     ports:
       - 8080:8080
-    volumes:
-      - ./bonita:/opt/bonita
     environment:
       - DB_VENDOR=${DB_VENDOR}
       - DB_HOST=${DB_HOST}
@@ -59,6 +57,6 @@ services:
       - ../DSSD-2024-Express:/usr/src/app 
     ports:
       - 3000:3000  
-    command: bash -c "npm install && npm run start:dev"  
+    command: bash -c "npm install  && tail -f /dev/null"  
     depends_on:
       - db  
