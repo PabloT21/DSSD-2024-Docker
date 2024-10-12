@@ -52,3 +52,13 @@ services:
             exit 1
         fi
         exec /opt/files/startup.sh /opt/bonita/server/bin/catalina.sh run
+  api:
+    image: node:16
+    working_dir: /usr/src/app
+    volumes:
+      - ../DSSD-2024-Express:/usr/src/app 
+    ports:
+      - 3000:3000  
+    command: bash -c "npm install && npm run start:dev"  
+    depends_on:
+      - db  
